@@ -28,7 +28,8 @@ LOCAL_INCLUDES  += $(MOZ_PLATFORM_MAEMO_CFLAGS) \
                    -I$(topsrcdir)/dom/system/unix \
                    $(NULL)
 endif
-ifdef MOZ_ENABLE_QTMOBILITY
+# The same as CXXFLAGS += $(MOZ_QT_CFLAGS)?
+ifdef MOZ_ENABLE_QT5GEOPOSITION 
 LOCAL_INCLUDES  += $(MOZ_QT_CFLAGS) \
                    -I$(topsrcdir)/dom/system/unix \
                    $(NULL)

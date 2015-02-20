@@ -31,7 +31,7 @@ ifdef MOZ_PLATFORM_MAEMO
 LOCAL_INCLUDES  += $(MOZ_DBUS_CFLAGS) \
                    $(NULL)
 endif
-ifdef MOZ_ENABLE_QTMOBILITY
+ifdef MOZ_ENABLE_QT5GEOPOSITION
 LOCAL_INCLUDES  += $(MOZ_QT_CFLAGS) \
                    -I$(topsrcdir)/dom/src/geolocation \
                    $(NULL)

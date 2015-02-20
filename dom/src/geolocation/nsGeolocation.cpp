@@ -52,7 +52,7 @@
 #include "MaemoLocationProvider.h"
 #endif
 
-#ifdef MOZ_ENABLE_QTMOBILITY
+#ifdef MOZ_ENABLE_QT5GEOPOSITION
 #include "QTMLocationProvider.h"
 #endif
 
@@ -642,7 +642,7 @@ nsresult nsGeolocationService::Init()
   mProvider = new MaemoLocationProvider();
 #endif
 
-#ifdef MOZ_ENABLE_QTMOBILITY
+#ifdef MOZ_ENABLE_QT5GEOPOSITION
   mProvider = new QTMLocationProvider();
 #endif
 

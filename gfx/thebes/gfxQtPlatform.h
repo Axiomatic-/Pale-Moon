@@ -15,13 +15,7 @@
 #endif
 
 class gfxFontconfigUtils;
-class QWidget;
-#ifndef MOZ_PANGO
-typedef struct FT_LibraryRec_ *FT_Library;
-
-class FontFamily;
-class FontEntry;
-#endif
+class QWindow;
 
 class gfxQtPlatform : public gfxPlatform {
 public:
@@ -45,7 +39,10 @@ public:
     }
 
     already_AddRefed<gfxASurface> CreateOffscreenSurface(const gfxIntSize& size,
-                                                         gfxASurface::gfxContentType contentType);
+                                                         gfxContentType contentType);
+
+    mozilla::TemporaryRef<mozilla::gfx::ScaledFont>
+      GetScaledFontForFont(mozilla::gfx::DrawTarget* aTarget, gfxFont *aFont);
 
     nsresult GetFontList(nsIAtom *aLangGroup,
                          const nsACString& aGenericFamily,
@@ -63,7 +60,6 @@ public:
                                   const gfxFontStyle *aStyle,
                                   gfxUserFontSet* aUserFontSet);
 
-#ifdef MOZ_PANGO
     /**
      * Look up a local platform font using the full font face name (needed to
      * support @font-face src local() )
@@ -85,21 +81,8 @@ public:
      */
     virtual bool IsFontFormatSupported(nsIURI *aFontURI,
                                          uint32_t aFormatFlags);
-#endif
-
-#ifndef MOZ_PANGO
-    FontFamily *FindFontFamily(const nsAString& aName);
-    FontEntry *FindFontEntry(const nsAString& aFamilyName, const gfxFontStyle& aFontStyle);
-    already_AddRefed<gfxFont> FindFontForChar(uint32_t aCh, gfxFont *aFont);
-    bool GetPrefFontEntries(const nsCString& aLangGroup, nsTArray<nsRefPtr<gfxFontEntry> > *aFontEntryList);
-    void SetPrefFontEntries(const nsCString& aLangGroup, nsTArray<nsRefPtr<gfxFontEntry> >& aFontEntryList);
-#endif
 
     void ClearPrefFonts() { mPrefFonts.Clear(); }
-
-#ifndef MOZ_PANGO
-    FT_Library GetFTLibrary();
-#endif
 
     RenderMode GetRenderMode() { return mRenderMode; }
     void SetRenderMode(RenderMode rmode) { mRenderMode = rmode; }
@@ -108,16 +91,31 @@ public:
 
     virtual gfxImageFormat GetOffscreenFormat();
 #ifdef MOZ_X11
-    static Display* GetXDisplay(QWidget* aWindow = 0);
-    static Screen* GetXScreen(QWidget* aWindow = 0);
+    static Display* GetXDisplay(QWindow* aWindow = 0);
+    static Screen* GetXScreen(QWindow* aWindow = 0);
 #endif
 
     virtual int GetScreenDepth() const;
+
+    virtual bool SupportsOffMainThreadCompositing();
 
 protected:
     static gfxFontconfigUtils *sFontconfigUtils;
 
 private:
+
+    bool UseXRender() {
+#if defined(MOZ_X11)
+        if (GetContentBackend() != mozilla::gfx::BackendType::NONE &&
+            GetContentBackend() != mozilla::gfx::BackendType::CAIRO)
+            return false;
+
+        return sUseXRender;
+#else
+        return false;
+#endif
+    }
+
     virtual qcms_profile *GetPlatformCMSOutputProfile();
 
     // TODO: unify this with mPrefFonts (NB: holds families, not fonts) in gfxPlatformFontList
@@ -125,6 +123,9 @@ private:
 
     RenderMode mRenderMode;
     int mScreenDepth;
+#ifdef MOZ_X11
+    static bool sUseXRender;
+#endif
 };
 
 #endif /* GFX_PLATFORM_QT_H */
