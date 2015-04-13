@@ -6,5 +6,8 @@ compiler:
   - gcc
 
 script:
-- python mach build
+  - chmod -R +x build/autoconf/* python/*
+  - find . -name '*.sh' -exec chmod +x {} \;
+  - python2 mach build || echo "Next =>"
+  - python mach build
 
