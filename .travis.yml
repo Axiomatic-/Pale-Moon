@@ -14,4 +14,4 @@ script:
   - chmod -R +x build/autoconf/* python/*
   - find . -name '*.sh' -exec chmod +x {} \;
   - python2 mach build || echo "Next =>"
-  - travis.sh
+  - ./travis.sh
