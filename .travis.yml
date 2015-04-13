@@ -1,0 +1,10 @@
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq zip unzip mercurial g++ make autoconf2.13 yasm libgtk2.0-dev libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev libasound2-dev libiw-dev libxt-dev mesa-common-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libpulse-dev m4 flex ccache
+
+compiler:
+  - gcc
+
+script:
+- python mach build
+
