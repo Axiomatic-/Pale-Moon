@@ -293,8 +293,6 @@ _pixman_internal_only_get_implementation (void)
     return get_implementation ();
 }
 
-#ifdef DEBUG
-
 void
 _pixman_log_error (const char *function, const char *message)
 {
@@ -311,5 +309,3 @@ _pixman_log_error (const char *function, const char *message)
 	n_messages++;
     }
 }
-
-#endif
