@@ -14,5 +14,5 @@ script:
   - chmod -R +x build/autoconf/* python/*
   - find . -name '*.sh' -exec chmod +x {} \;
   - python2 mach build || echo "Next =>"
-  - python mach build > /dev/null 2>&1 # Log limit is to 4MiB, so silence it. (Mach should return something though, right?)
+  - python mach build 2> /dev/null # Log limit is to 4MiB, so silence it. (Mach should return something though, right?)
 
