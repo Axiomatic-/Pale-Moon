@@ -1,15 +1,18 @@
 language: cpp
 
 before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -qq
   - sudo apt-get install -qq zip unzip mercurial g++ make autoconf2.13 yasm libgtk2.0-dev libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev libasound2-dev libiw-dev libxt-dev mesa-common-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libpulse-dev m4 flex ccache
-
-compiler:
-  - clang
-
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+matrix:
+  include:
+    - compiler: gcc
+      env: CFLAGS="-O1" # O2, 03 = more memory needed due to optimization phase, hopefully this keeps it within the limit.
 script:
   - chmod -R +x build/autoconf/* python/*
   - find . -name '*.sh' -exec chmod +x {} \;
   - python2 mach build || echo "Next =>"
-  - python mach build
+  - python mach build 2>&1 /dev/null # Log limit is to 4MiB, so silence it. (Mach should return something though, right?)
 
