@@ -3800,9 +3800,9 @@ nsStyleAnimation::Value::operator==(const Value& aOther) const
     case eUnit_Shadow:
     case eUnit_Transform:
     case eUnit_BackgroundPosition:
-      return *mValue.mCSSValueList == *aOther.mValue.mCSSValueList;
+      return nsCSSValueList::Equal(mValue.mCSSValueList, aOther.mValue.mCSSValueList);
     case eUnit_CSSValuePairList:
-      return *mValue.mCSSValuePairList == *aOther.mValue.mCSSValuePairList;
+      return nsCSSValuePairList::Equal(mValue.mCSSValuePairList, aOther.mValue.mCSSValuePairList);
     case eUnit_UnparsedString:
       return (NS_strcmp(GetStringBufferValue(),
                         aOther.GetStringBufferValue()) == 0);

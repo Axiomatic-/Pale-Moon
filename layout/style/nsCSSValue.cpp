@@ -217,10 +217,10 @@ bool nsCSSValue::operator==(const nsCSSValue& aOther) const
       return *mValue.mRect == *aOther.mValue.mRect;
     }
     else if (eCSSUnit_List == mUnit) {
-      return *mValue.mList == *aOther.mValue.mList;
+      return nsCSSValueList::Equal(mValue.mList, aOther.mValue.mList);
     }
     else if (eCSSUnit_PairList == mUnit) {
-      return *mValue.mPairList == *aOther.mValue.mPairList;
+      return nsCSSValuePairList::Equal(mValue.mPairList, aOther.mValue.mPairList);
     }
     else {
       return mValue.mFloat == aOther.mValue.mFloat;
@@ -1421,13 +1421,14 @@ nsCSSValueList::AppendToString(nsCSSProperty aProperty, nsAString& aResult) cons
   }
 }
 
-bool
-nsCSSValueList::operator==(const nsCSSValueList& aOther) const
+bool /* is static */
+nsCSSValueList::Equal(const nsCSSValueList* aList1, const nsCSSValueList* aList2)
 {
-  if (this == &aOther)
+  if (aList1 == alist2) {
     return true;
+  }
 
-  const nsCSSValueList *p1 = this, *p2 = &aOther;
+  const nsCSSValueList *p1 = aList1, *p2 = aList2;
   for ( ; p1 && p2; p1 = p1->mNext, p2 = p2->mNext) {
     if (p1->mValue != p2->mValue)
       return false;
@@ -1649,13 +1650,13 @@ nsCSSValuePairList::AppendToString(nsCSSProperty aProperty,
   }
 }
 
-bool
-nsCSSValuePairList::operator==(const nsCSSValuePairList& aOther) const
+bool /* is static */
+nsCSSValuePairList::Equal(const nsCSSValuePairList* aList1, const nsCSSValuePairList* aList2)
 {
-  if (this == &aOther)
+  if (aList1 == aList2) {
     return true;
-
-  const nsCSSValuePairList *p1 = this, *p2 = &aOther;
+  }
+  const nsCSSValuePairList *p1 = aList1, *p2 = aList2;
   for ( ; p1 && p2; p1 = p1->mNext, p2 = p2->mNext) {
     if (p1->mXValue != p2->mXValue ||
         p1->mYValue != p2->mYValue)

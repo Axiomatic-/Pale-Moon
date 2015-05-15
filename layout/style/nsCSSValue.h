@@ -660,10 +660,8 @@ struct nsCSSValueList {
   nsCSSValueList* Clone() const;  // makes a deep copy
   void CloneInto(nsCSSValueList* aList) const; // makes a deep copy into aList
   void AppendToString(nsCSSProperty aProperty, nsAString& aResult) const;
-
-  bool operator==(nsCSSValueList const& aOther) const;
-  bool operator!=(const nsCSSValueList& aOther) const
-  { return !(*this == aOther); }
+  
+  static bool Equal(const nsCSSValueList* aList1, const nsCSSValueList* aList2);
 
   size_t SizeOfIncludingThis(nsMallocSizeOfFun aMallocSizeOf) const;
 
@@ -676,6 +674,9 @@ private:
   {
     MOZ_COUNT_CTOR(nsCSSValueList);
   }
+  /* Make null safe, to prevent segmentationfault in Clang. */
+  bool operator==(nsCSSValueList const& aOther) const MOZ_DELETE;
+  bool operator!=(const nsCSSValueList& aOther) const MOZ_DELETE;
 };
 
 // nsCSSValueList_heap differs from nsCSSValueList only in being
@@ -989,9 +990,7 @@ struct nsCSSValuePairList {
   nsCSSValuePairList* Clone() const; // makes a deep copy
   void AppendToString(nsCSSProperty aProperty, nsAString& aResult) const;
 
-  bool operator==(const nsCSSValuePairList& aOther) const;
-  bool operator!=(const nsCSSValuePairList& aOther) const
-  { return !(*this == aOther); }
+  static bool Equal(const nsCSSValuePairList* aList1, const nsCSSValuePairList* aList2);
 
   size_t SizeOfIncludingThis(nsMallocSizeOfFun aMallocSizeOf) const;
 
@@ -1005,6 +1004,9 @@ private:
   {
     MOZ_COUNT_CTOR(nsCSSValuePairList);
   }
+  /* Make null-safe, to prevent segmentation fault in Clang. */
+  bool operator==(const nsCSSValuePairList& aOther) const MOZ_DELETE;
+  bool operator!=(const nsCSSValuePairList& aOther) const MOZ_DELETE;
 };
 
 // nsCSSValuePairList_heap differs from nsCSSValuePairList only in being
