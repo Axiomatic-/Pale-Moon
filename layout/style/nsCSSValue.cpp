@@ -1424,7 +1424,7 @@ nsCSSValueList::AppendToString(nsCSSProperty aProperty, nsAString& aResult) cons
 bool /* is static */
 nsCSSValueList::Equal(const nsCSSValueList* aList1, const nsCSSValueList* aList2)
 {
-  if (aList1 == alist2) {
+  if (aList1 == aList2) {
     return true;
   }
 
