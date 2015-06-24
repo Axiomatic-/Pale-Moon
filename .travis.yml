@@ -1,0 +1,9 @@
+language: cpp
+sudo: required
+
+before_install:
+ - bash build/travis_ci/travis_ci.sh deps
+script:
+ - chmod -R +x build/autoconf/* python/*
+ - find . -name '*.sh' -exec chmod +x {} \;
+ - bash build/travis_ci/travis_ci.sh build
