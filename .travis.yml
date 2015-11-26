@@ -1,0 +1,13 @@
+language: cpp
+sudo: required
+dist: trusty
+
+git:
+  depth: 1
+
+install:
+  - bash build/travis_ci/travis_ci.sh deps
+script:
+  - bash build/travis_ci/travis_ci.sh build
+after_success:
+  - bash build/travis_ci/travis_ci.sh upload_build
