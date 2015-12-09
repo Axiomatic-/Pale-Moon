@@ -17,7 +17,7 @@ build_palemoon () {
 	set -e
 
 	export CC="clang-3.4"
-	export CXX="clang++-3.4
+	export CXX="clang++-3.4"
 
 	case $(uname -m) in
 		i*86)
