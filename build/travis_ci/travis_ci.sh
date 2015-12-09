@@ -16,8 +16,8 @@ install_deps () {
 build_palemoon () {
 	set -e
 
-	export CC="/usr/local/clang-3.4/bin/clang"
-	export CXX="/usr/local/clang-3.4/bin/clang++"
+	export CC="/usr/local/clang-3.4.0/bin/clang"
+	export CXX="/usr/local/clang-3.4.0/bin/clang++"
 
 	case $(uname -m) in
 		i*86)
@@ -187,7 +187,7 @@ if [[ -z $palemoon_ci_logging ]]; then
 		# There's a maximum logging limit too (4 MB at the time of this writing.)
 		echo "Last 200 lines of output from the log:"
 		tail -n 200 "$logfile"
-		echo `which clang`
+		echo `find /usr/local -name 'clang*'`
 	fi
 	exit $exitstat
 fi
