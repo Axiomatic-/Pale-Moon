@@ -187,6 +187,7 @@ if [[ -z $palemoon_ci_logging ]]; then
 		# There's a maximum logging limit too (4 MB at the time of this writing.)
 		echo "Last 200 lines of output from the log:"
 		tail -n 200 "$logfile"
+		echo `which clang`
 	fi
 	exit $exitstat
 fi
