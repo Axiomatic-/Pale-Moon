@@ -16,8 +16,8 @@ install_deps () {
 build_palemoon () {
 	set -e
 
-	export CC="clang"
-	export CXX="clang++"
+	export CC="/usr/local/clang-3.4/bin/clang"
+	export CXX="/usr/local/clang-3.4/bin/clang++"
 
 	case $(uname -m) in
 		i*86)
