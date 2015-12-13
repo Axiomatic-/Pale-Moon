@@ -5,9 +5,13 @@ dist: trusty
 git:
   depth: 1
 
-install:
-  - bash build/travis_ci/travis_ci.sh deps
-script:
-  - bash build/travis_ci/travis_ci.sh build
-after_success:
-  - bash build/travis_ci/travis_ci.sh upload_build
+matrix:
+    include:
+        - env: BUILD_TYPE=Alpha
+          language: cpp
+          before_install: []
+          install: bash build/travis_ci/travis_ci.sh deps
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build
+          after_success: bash build/travis_ci/travis_ci.sh upload_build
+          after_script: []
