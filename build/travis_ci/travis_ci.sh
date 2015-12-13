@@ -10,14 +10,14 @@ install_deps () {
 
 	sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
 	sudo apt-get update -y --force-yes
-	sudo apt-get install -y --force-yes zip unzip clang make autoconf2.13 yasm libgtk2.0-dev libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev libasound2-dev libiw-dev libxt-dev mesa-common-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libpulse-dev m4 flex
+	sudo apt-get install -y --force-yes zip unzip clang-3.4 make autoconf2.13 yasm libgtk2.0-dev libglib2.0-dev libdbus-1-dev libdbus-glib-1-dev libasound2-dev libiw-dev libxt-dev mesa-common-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libpulse-dev m4 flex
 }
 
 build_palemoon () {
 	set -e
 
-	export CC="clang"
-	export CXX="clang++"
+	export CC="/usr/bin/clang"
+	export CXX="/usr/bin/clang++"
 
 	case $(uname -m) in
 		i*86)
@@ -156,7 +156,7 @@ upload_file () {
 
 cd "$srcdir"
 
-if [[ -z "$1" ]]; then
+if [[ -z $1 ]]; then
 	echo "Action to be performed was not given."
 	exit 1
 fi
@@ -168,7 +168,7 @@ fi
 
 if [[ -z $palemoon_ci_logging ]]; then
 	# Invoke a background process with the the variable defined.
-	palemoon_ci_logging=true "$srcdir/build/travis_ci/travis_ci.sh" "$1" &> "$logfile" &
+	palemoon_ci_logging=true timeout 2400 "$srcdir/build/travis_ci/travis_ci.sh" "$1" &> "$logfile" &
 	ps_pid=$!
 	echo -n "Started job $1 "
 
@@ -185,17 +185,21 @@ if [[ -z $palemoon_ci_logging ]]; then
 
 	if [[ "$(wc -l < "$logfile")" -ge 0 ]]; then
 		# There's a maximum logging limit too (4 MB at the time of this writing.)
-		echo "Last 200 lines of output from the log:"
-		tail -n 200 "$logfile"
+		echo "Last 50 lines of output from the log:"
+		tail -n 50 "$logfile"
 	fi
+	if [[ $1 == build_* ]] && [[ $1 != build_10 ]]; then
+	exit 0
+	else
 	exit $exitstat
+	fi
 fi
 
 case "$1" in
 	deps)
 		install_deps
 		;;
-	build)
+	build_*)
 		build_palemoon
 		;;
 	upload_build)

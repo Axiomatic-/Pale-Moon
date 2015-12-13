@@ -5,9 +5,54 @@ dist: trusty
 git:
   depth: 1
 
-install:
-  - bash build/travis_ci/travis_ci.sh deps
-script:
-  - bash build/travis_ci/travis_ci.sh build
-after_success:
-  - bash build/travis_ci/travis_ci.sh upload_build
+env:
+    global:
+        - BUILD_TYPE=Code
+
+install: bash build/travis_ci/travis_ci.sh deps
+
+matrix:
+    include:
+        - env: BUILD_TYPE=Alpha
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_1
+        - env: BUILD_TYPE=Beta
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_2
+        - env: BUILD_TYPE=Gamma
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_3
+        - env: BUILD_TYPE=Delta
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_4
+        - env: BUILD_TYPE=Epsilon
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_5
+        - env: BUILD_TYPE=Zeta
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_6
+        - env: BUILD_TYPE=Eta
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_7
+        - env: BUILD_TYPE=Theta
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_8
+        - env: BUILD_TYPE=Iota
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_9
+        - env: BUILD_TYPE=Kappa
+          language: cpp
+          before_script: []
+          script: bash build/travis_ci/travis_ci.sh build_10
+
+after_success: bash build/travis_ci/travis_ci.sh upload_build
+after_script: []
