@@ -1,0 +1,8 @@
+[2015-12-12] 
+ - I need Travis CI to start another build, the
+   last one was not what I had in mind because
+   it was running concurrently with two jobs
+   the structure is to be synchronous, I changed
+   the settings via the web UI to one.
+   (i.e.) this file is temporary just to trigger a
+   new build,
