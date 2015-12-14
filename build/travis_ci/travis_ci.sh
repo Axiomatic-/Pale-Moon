@@ -30,7 +30,9 @@ build_palemoon () {
 	echo \
 "
 mk_add_options MOZ_CO_PROJECT=browser
+mk_add_options MOZ_CURRENT_PROJECT=browser ./mach build
 ac_add_options --enable-application=browser
+mk_add_options MOZ_MAKE_FLAGS="-j2"
 
 mk_add_options MOZ_OBJDIR=\"$objdir\"
 
@@ -185,8 +187,8 @@ if [[ -z $palemoon_ci_logging ]]; then
 
 	if [[ "$(wc -l < "$logfile")" -ge 0 ]]; then
 		# There's a maximum logging limit too (4 MB at the time of this writing.)
-		echo "Last 50 lines of output from the log:"
-		tail -n 50 "$logfile"
+		echo "Last 150 lines of output from the log:"
+		tail -n 150 "$logfile"
 	fi
 	if [[ $1 == build_* ]] && [[ $1 != build_10 ]]; then
 	exit 0
