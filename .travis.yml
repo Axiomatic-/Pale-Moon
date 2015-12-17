@@ -1,4 +1,5 @@
 language: cpp
+skip_cleanup: true
 sudo: required
 dist: trusty
 
