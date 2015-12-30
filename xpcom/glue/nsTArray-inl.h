@@ -113,10 +113,14 @@ nsTArray_base<Alloc, Copy>::EnsureCapacity(size_type capacity, size_type elemSiz
     return Alloc::FailureResult();
   }
 
+  // The original Mozilla patch uses size_t. To keep consistency
+  // and since size_t is an alias, just stick with uint32_t.
+  // Ref: BMO# 1048044
+  uint32_t reqSize = sizeof(Header) + aCapacity * aElemSize;
+
   if (mHdr == EmptyHdr()) {
     // Malloc() new data
-    Header *header = static_cast<Header*>
-                     (Alloc::Malloc(sizeof(Header) + capacity * elemSize));
+    Header* header = static_cast<Header*>(Alloc::Malloc(reqSize));
     if (!header)
       return Alloc::FailureResult();
     header->mLength = 0;
@@ -127,31 +131,25 @@ nsTArray_base<Alloc, Copy>::EnsureCapacity(size_type capacity, size_type elemSiz
     return Alloc::SuccessResult();
   }
 
-  // We increase our capacity so |capacity * elemSize + sizeof(Header)| is the
-  // next power of two, if this value is less than pageSize bytes, or otherwise
-  // so it's the next multiple of pageSize.
-  const uint32_t pageSizeBytes = 12;
-  const uint32_t pageSize = 1 << pageSizeBytes;
+  // We increase our capacity so that the allocated buffer grows exponentially,
+  // which gives us amortized O(1) appending. Below the threshold, we use
+  // powers-of-two. Above the threshold, we grow by at least 1.125, rounding up
+  // to the nearest MiB.
+  const uint32_t slowGrowthThreshold = 8 * 1024 * 1024;
 
-  uint32_t minBytes = capacity * elemSize + sizeof(Header);
   uint32_t bytesToAlloc;
-  if (minBytes >= pageSize) {
-    // Round up to the next multiple of pageSize.
-    bytesToAlloc = pageSize * ((minBytes + pageSize - 1) / pageSize);
+  if (reqSize >= slowGrowthThreshold) {
+    uint32_t currSize = sizeof(Header) + Capacity() * aElemSize;
+    uint32_t minNewSize = currSize + (currSize >> 3); // multiply by 1.125
+    bytesToAlloc = reqSize > minNewSize ? reqSize : minNewSize;
+
+    // Round up to the next multiple of MiB.
+    const uint32_t MiB = 1 << 20;
+    bytesToAlloc = MiB * ((bytesToAlloc + MiB - 1) / MiB);
   }
   else {
-    // Round up to the next power of two.  See
-    // http://graphics.stanford.edu/~seander/bithacks.html
-    bytesToAlloc = minBytes - 1;
-    bytesToAlloc |= bytesToAlloc >> 1;
-    bytesToAlloc |= bytesToAlloc >> 2;
-    bytesToAlloc |= bytesToAlloc >> 4;
-    bytesToAlloc |= bytesToAlloc >> 8;
-    bytesToAlloc |= bytesToAlloc >> 16;
-    bytesToAlloc++;
-
-    MOZ_ASSERT((bytesToAlloc & (bytesToAlloc - 1)) == 0,
-               "nsTArray's allocation size should be a power of two!");
+    // Round up to the next power of two.
+    bytesToAlloc = mozilla::RoundUpPow2(reqSize);
   }
 
   Header *header;

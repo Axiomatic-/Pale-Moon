@@ -9,6 +9,7 @@
 
 #include "nsTArrayForwardDeclare.h"
 #include "mozilla/Assertions.h"
+#include "mozilla/MathAlgorithms.h"
 #include "mozilla/TypeTraits.h"
 #include "mozilla/Util.h"
 
