@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/DebugOnly.h"
+#include "mozilla/MathAlgorithms.h"
 
 #include "jscntxt.h"
 #include "jscompartment.h"
@@ -18,6 +19,7 @@
 
 using namespace js;
 using namespace js::jit;
+using mozilla::FloorLog2;
 
 namespace js {
 namespace jit {
@@ -598,8 +600,7 @@ CodeGeneratorX86Shared::visitMulI(LMulI *ins)
           default:
             if (!mul->canOverflow() && constant > 0) {
                 // Use shift if cannot overflow and constant is power of 2
-                int32_t shift;
-                JS_FLOOR_LOG2(shift, constant);
+                int32_t shift = FloorLog2(constant);
                 if ((1 << shift) == constant) {
                     masm.shll(Imm32(shift), ToRegister(lhs));
                     return true;

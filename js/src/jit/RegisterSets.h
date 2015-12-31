@@ -7,6 +7,8 @@
 #ifndef jit_RegisterSets_h
 #define jit_RegisterSets_h
 
+#include "mozilla/MathAlgorithms.h"
+
 #include "Registers.h"
 #include "jit/IonAllocPolicy.h"
 
@@ -397,14 +399,11 @@ class TypedRegisterSet
     }
     T getAny() const {
         JS_ASSERT(!empty());
-        int ireg;
-        JS_FLOOR_LOG2(ireg, bits_);
-        return T::FromCode(ireg);
+        return T::FromCode(mozilla::FloorLog2(bits_));
     }
     T getFirst() const {
         JS_ASSERT(!empty());
-        int ireg = js_bitscan_ctz32(bits_);
-        return T::FromCode(ireg);
+        return T::FromCode(mozilla::CountTrailingZeroes32(bits_));
     }
     T takeAny() {
         JS_ASSERT(!empty());

@@ -342,7 +342,7 @@ js::ObjectImpl::dynamicSlotsCount(uint32_t nfixed, uint32_t span)
     if (span <= SLOT_CAPACITY_MIN)
         return SLOT_CAPACITY_MIN;
 
-    uint32_t slots = RoundUpPow2(span);
+    uint32_t slots = mozilla::RoundUpPow2(span);
     MOZ_ASSERT(slots >= span);
     return slots;
 }

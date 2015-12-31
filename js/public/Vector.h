@@ -8,10 +8,11 @@
 #define js_Vector_h
 
 #include "mozilla/Attributes.h"
+#include "mozilla/MathAlgorithms.h"
 #include "mozilla/TypeTraits.h"
 
-#include "TemplateLib.h"
-#include "Utility.h"
+// #include "TemplateLib.h"
+// #include "Utility.h"
 
 /* Silence dire "bugs in previous versions of MSVC have been fixed" warnings */
 #ifdef _MSC_VER
@@ -38,7 +39,7 @@ template <typename T>
 static bool CapacityHasExcessSpace(size_t cap)
 {
     size_t size = cap * sizeof(T);
-    return RoundUpPow2(size) - size >= sizeof(T);
+    return mozilla::RoundUpPow2(size) - size >= sizeof(T);
 }
 
 /*
@@ -688,7 +689,7 @@ Vector<T,N,AP>::growStorageBy(size_t incr)
         }
 
         size_t newMinSize = newMinCap * sizeof(T);
-        size_t newSize = RoundUpPow2(newMinSize);
+        size_t newSize = mozilla::RoundUpPow2(newMinSize);
         newCap = newSize / sizeof(T);
     }
 

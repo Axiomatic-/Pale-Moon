@@ -5,8 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "LifoAlloc.h"
+#include "mozilla/MathAlgorithms.h"
+
 
 using namespace js;
+using mozilla::RoundUpPow2;
 
 namespace js {
 namespace detail {

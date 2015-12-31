@@ -7,6 +7,7 @@
 #ifndef jit_shared_MacroAssembler_x86_shared_h
 #define jit_shared_MacroAssembler_x86_shared_h
 
+#include "mozilla/Casting.h"
 #include "mozilla/DebugOnly.h"
 
 #ifdef JS_CPU_X86
@@ -392,8 +393,8 @@ class MacroAssemblerX86Shared : public Assembler
             return true;
         }
 
-        int tz = js_bitscan_ctz64(u);
-        int lz = js_bitscan_clz64(u);
+        int tz = mozilla::CountTrailingZeroes64(u);
+        int lz = mozilla::CountLeadingZeroes64(u);
         if (u == (~uint64_t(0) << (lz + tz) >> lz)) {
             pcmpeqw(dest, dest);
             if (tz != 0)

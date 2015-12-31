@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/DebugOnly.h"
+#include "mozilla/MathAlgorithms.h"
 
 #include "Assembler-arm.h"
 #include "MacroAssembler-arm.h"
@@ -16,6 +17,7 @@
 
 using namespace js;
 using namespace js::jit;
+using mozilla::CountLeadingZeroes32;
 
 ABIArgGenerator::ABIArgGenerator() :
 #if defined(JS_CPU_ARM_HARDFP)
@@ -947,7 +949,7 @@ Imm8::encodeTwoImms(uint32_t imm)
     if (no_n1 == 0)
         return TwoImm8mData();
 
-    int mid = ((js_bitscan_clz32(no_n1)) & 0x1E);
+    int mid = CountLeadingZeroes32(no_n1) & 0x1E;
     uint32_t no_n2 = no_n1 & ~((0xff << ((24 - mid) & 0x1f)) | 0xff >> ((8 + mid) & 0x1f));
 
     if (no_n2 == 0) {
@@ -978,7 +980,7 @@ Imm8::encodeTwoImms(uint32_t imm)
     if (left >= 8)
         return TwoImm8mData();
 
-    int right = 32 - (js_bitscan_clz32(no_n2) & 30);
+    int right = 32 - (CountLeadingZeroes32(no_n2) & 30);
     // all remaining set bits *must* fit into the lower 8 bits
     // the right == 8 case should be handled by the previous case.
     if (right > 8)
@@ -993,7 +995,7 @@ Imm8::encodeTwoImms(uint32_t imm)
         // and find that we need a second op for 0x4000, and 0x1 cannot
         // be included in the encoding of 0x04100000
         no_n1 = imm & ~((0xff >> (8-right)) | (0xff << (24 + right)));
-        mid = (js_bitscan_clz32(no_n1)) & 30;
+        mid = CountLeadingZeroes32(no_n1) & 30;
         no_n2 =
             no_n1  & ~((0xff << ((24 - mid)&31)) | 0xff >> ((8 + mid)&31));
         if (no_n2 != 0)

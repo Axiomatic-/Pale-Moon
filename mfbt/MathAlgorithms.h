@@ -271,7 +271,7 @@ namespace detail {
     return __builtin_ctzll(u);
   }
 
-#else 
+#else
   //not windows x86/x64, gnu cc or clang
 #error "Clz/ctz/cpop unimplemented for your compiler. Implement these!"
   inline uint_fast8_t CountLeadingZeroes32(uint32_t u) MOZ_DELETE;
@@ -342,6 +342,115 @@ CountTrailingZeroes64(uint64_t u)
 {
   MOZ_ASSERT(u != 0);
   return detail::CountTrailingZeroes64(u);
+}
+
+
+namespace detail {
+
+template<typename T, size_t Size = sizeof(T)>
+class CeilingLog2;
+
+template<typename T>
+class CeilingLog2<T, 4>
+{
+  public:
+    static uint_fast8_t compute(const T t) {
+      // Check for <= 1 to avoid the == 0 undefined case.
+      return t <= 1 ? 0 : 32 - CountLeadingZeroes32(t - 1);
+    }
+};
+
+template<typename T>
+class CeilingLog2<T, 8>
+{
+  public:
+    static uint_fast8_t compute(const T t) {
+      // Check for <= 1 to avoid the == 0 undefined case.
+      return t <= 1 ? 0 : 64 - CountLeadingZeroes64(t - 1);
+    }
+};
+
+} // namespace detail
+
+/**
+ * Compute the log of the least power of 2 greater than or equal to |t|.
+ *
+ * CeilingLog2(0..1) is 0;
+ * CeilingLog2(2) is 1;
+ * CeilingLog2(3..4) is 2;
+ * CeilingLog2(5..8) is 3;
+ * CeilingLog2(9..16) is 4; and so on.
+ */
+template<typename T>
+inline uint_fast8_t
+CeilingLog2(const T t)
+{
+  return detail::CeilingLog2<T>::compute(t);
+}
+
+/** A CeilingLog2 variant that accepts only size_t. */
+inline uint_fast8_t
+CeilingLog2Size(size_t n)
+{
+  return CeilingLog2(n);
+}
+
+namespace detail {
+
+template<typename T, size_t Size = sizeof(T)>
+class FloorLog2;
+
+template<typename T>
+class FloorLog2<T, 4>
+{
+  public:
+    static uint_fast8_t compute(const T t) {
+      return 31 - CountLeadingZeroes32(t | 1);
+    }
+};
+
+template<typename T>
+class FloorLog2<T, 8>
+{
+  public:
+    static uint_fast8_t compute(const T t) {
+      return 63 - CountLeadingZeroes64(t | 1);
+    }
+};
+
+} // namespace detail
+
+/**
+ * Compute the log of the greatest power of 2 less than or equal to |t|.
+ *
+ * FloorLog2(0..1) is 0;
+ * FloorLog2(2..3) is 1;
+ * FloorLog2(4..7) is 2;
+ * FloorLog2(8..15) is 3; and so on.
+ */
+template<typename T>
+inline uint_fast8_t
+FloorLog2(const T t)
+{
+  return detail::FloorLog2<T>::compute(t);
+}
+
+/** A FloorLog2 variant that accepts only size_t. */
+inline uint_fast8_t
+FloorLog2Size(size_t n)
+{
+  return FloorLog2(n);
+}
+
+/*
+ * Round x up to the nearest power of 2.  This function assumes that the most
+ * significant bit of x is not set, which would lead to overflow.
+ */
+inline size_t
+RoundUpPow2(size_t x)
+{
+  MOZ_ASSERT(~x > x, "can't round up -- will overflow!");
+  return size_t(1) << CeilingLog2(x);
 }
 
 } /* namespace mozilla */

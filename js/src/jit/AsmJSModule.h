@@ -7,6 +7,8 @@
 #ifndef jit_AsmJSModule_h
 #define jit_AsmJSModule_h
 
+#include "mozilla/MathAlgorithms.h"
+
 #ifdef JS_ION
 
 #include "gc/Marking.h"
@@ -634,8 +636,7 @@ class AsmJSModule
 
     void patchBoundsChecks(unsigned heapSize) {
         jit::AutoFlushCache afc("patchBoundsCheck");
-        int bits = -1;
-        JS_CEILING_LOG2(bits, heapSize);
+        uint32_t bits = mozilla::CeilingLog2(heapSize);
         if (bits == -1) {
             // tried to size the array to 0, that is bad, but not horrible
             return;
